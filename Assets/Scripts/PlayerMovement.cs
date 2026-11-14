@@ -31,8 +31,17 @@ public class PlayerMovement : MonoBehaviour
     }
     private void changeDirection(float xValue) {
         if (xValue == 0) return;
-        if (xValue == -1) transform.localScale = new Vector3(-1, 1, 1);
+        if (xValue == 1) transform.localScale = new Vector3(-1, 1, 1);
         else transform.localScale = new Vector3(1, 1, 1);
+    }
+    public bool isSide() {
+        return moveDirection.x != 0;
+    }
+    public bool isUp() {
+        return moveDirection.y > 0;
+    }
+    public bool isDown() {
+        return moveDirection.y < 0;
     }
 
     public bool isWalking() {
