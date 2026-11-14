@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class InteractableObject : MonoBehaviour, IInteractable
 {
-    [SerializeField] private GameObject highlightObjectTemplate;
     private GameObject highlightObject;
     private bool wasInteracted = false;
     private void Awake() {
@@ -11,19 +10,25 @@ public class InteractableObject : MonoBehaviour, IInteractable
 
         // Creating the highlight Object
         SpawningHightlightObject();
+        SpawnMinimapIcon();
     }
 
     private void SpawningHightlightObject() {
-        if (highlightObjectTemplate == null) {
+        if (PrefabManager.Instance == null) {
             Debug.LogError($"Hightlight object is null at {gameObject.name}");
             return;
         }
-        highlightObject = Instantiate(highlightObjectTemplate, transform);
+        highlightObject = Instantiate(PrefabManager.Instance.HighlightObject, transform);
         highlightObject.transform.localPosition = Vector3.zero;
         highlightObject.transform.localScale = Vector3.one * 1.15f;
         highlightObject.GetComponent<SpriteRenderer>().sprite =
             GetComponent<SpriteRenderer>().sprite;
         highlightObject.SetActive(false);
+    }
+    private void SpawnMinimapIcon() {
+        GameObject obj = Instantiate(PrefabManager.Instance.MiniMapIcon);
+        obj.transform.parent = transform;
+        obj.transform.localPosition = Vector3.zero;
     }
 
     private void OnDestroy() {
@@ -40,12 +45,12 @@ public class InteractableObject : MonoBehaviour, IInteractable
         }
     }
     protected virtual void ObjectInRange() {
-        print("I'm in range");
+        //print("I'm in range");
         InteractionIcon.Instance.ShowUp(transform, Vector3.up);
         if (highlightObject != null) highlightObject.SetActive(true);
     }
     protected virtual void ObjectOutsideRange() {
-        print("I left the range");
+        //print("I left the range");
         InteractionIcon.Instance.Hide();
         if (highlightObject != null) highlightObject.SetActive(false);
     }
