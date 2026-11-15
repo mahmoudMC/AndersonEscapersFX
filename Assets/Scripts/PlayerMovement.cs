@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void Update() {
+        if (!GameStateManager.Instance.CanMove()) return;
         Vector2 moveDireNormalized = PlayerInput();
         moveDirection = new Vector3(moveDireNormalized.x, moveDireNormalized.y, 0);
         moveDirection *= speed;

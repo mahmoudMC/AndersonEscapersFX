@@ -2,9 +2,13 @@ using UnityEngine;
 
 public class InteractableObject : MonoBehaviour, IInteractable
 {
+    [SerializeField] private GameObject mission;
+    [SerializeField] private Vector3 iconOffset = Vector3.up;
     private GameObject highlightObject;
+    private GameObject icon;
     private bool wasInteracted = false;
-    private void Awake() {
+    protected bool canInteract = true;
+    private void Start() {
         PlayerInteraction.OnNewInteractableSet += OnNewInteractableSet;
         gameObject.layer = LayerMask.NameToLayer("Interactable");
 
@@ -26,9 +30,9 @@ public class InteractableObject : MonoBehaviour, IInteractable
         highlightObject.SetActive(false);
     }
     private void SpawnMinimapIcon() {
-        GameObject obj = Instantiate(PrefabManager.Instance.MiniMapIcon);
-        obj.transform.parent = transform;
-        obj.transform.localPosition = Vector3.zero;
+        icon = Instantiate(PrefabManager.Instance.MiniMapIcon);
+        icon.transform.parent = transform;
+        icon.transform.localPosition = Vector3.zero;
     }
 
     private void OnDestroy() {
@@ -46,7 +50,7 @@ public class InteractableObject : MonoBehaviour, IInteractable
     }
     protected virtual void ObjectInRange() {
         //print("I'm in range");
-        InteractionIcon.Instance.ShowUp(transform, Vector3.up);
+        InteractionIcon.Instance.ShowUp(transform, iconOffset);
         if (highlightObject != null) highlightObject.SetActive(true);
     }
     protected virtual void ObjectOutsideRange() {
@@ -54,5 +58,23 @@ public class InteractableObject : MonoBehaviour, IInteractable
         InteractionIcon.Instance.Hide();
         if (highlightObject != null) highlightObject.SetActive(false);
     }
-    public virtual void Interact() { }
+
+    public void MissionDone() {
+        canInteract = false;
+        mission.SetActive(false);
+        GameStateManager.Instance.GameStart();
+        Destroy(icon);
+    }
+    public virtual void Interact() {
+        if (mission == null) return;
+        if (GameStateManager.Instance.HasElectricity) {
+            mission.SetActive(true);
+            GameStateManager.Instance.PauseGame();
+        } else {
+            PrefabManager.Instance.ShowElectricityError();
+        }
+    }
+    public bool CanInteract() {
+        return canInteract;
+    }
 }

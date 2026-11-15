@@ -6,6 +6,7 @@ public class PrefabManager : MonoBehaviour
 
     [SerializeField] private GameObject highlightObject;
     [SerializeField] private GameObject miniMapIcon;
+    [SerializeField] private GameObject electricityText;
     public GameObject HighlightObject => highlightObject;
     public GameObject MiniMapIcon => miniMapIcon;
 
@@ -16,5 +17,10 @@ public class PrefabManager : MonoBehaviour
 
     private void OnDestroy() {
         Instance = null;
+    }
+    public async void ShowElectricityError() {
+        electricityText.SetActive(true);
+        await Awaitable.WaitForSecondsAsync(3);
+        electricityText.SetActive(false);
     }
 }

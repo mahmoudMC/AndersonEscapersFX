@@ -6,7 +6,12 @@ public class DialougeManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI sentenceText;
     [SerializeField] private float TypingSpeedPerSecond = 15;
+    [SerializeField, TextArea(4, 10)] private string sent;
     private bool skipping = false;
+
+    private void Start() {
+        StartTyping(sent);
+    }
 
     private void Update() {
         if (Input.GetKeyDown(KeyCode.Space)) {
@@ -16,9 +21,12 @@ public class DialougeManager : MonoBehaviour
 
     public async void StartTyping(string sentence) {
         skipping = false;
-        nameText.SetText("Anderson");
+        if (nameText != null) {
+            nameText.SetText("Anderson");
+        }
         sentenceText.SetText(sentence);
         for (int i = 0; i < sentence.Length; i++) {
+            if (!gameObject.activeInHierarchy) break;
             if (skipping) break;
             sentenceText.maxVisibleCharacters = i;
             await Awaitable.WaitForSecondsAsync(1f / TypingSpeedPerSecond);

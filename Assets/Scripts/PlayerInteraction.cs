@@ -29,6 +29,7 @@ public class PlayerInteraction : MonoBehaviour
         foreach (var hit in hits) {
             // Check if the hit object implements IInteractable
             if (hit.TryGetComponent<IInteractable>(out IInteractable interactable)) {
+                if (!interactable.CanInteract()) continue;
                 float sqrDistance = (hit.transform.position - currentPosition).sqrMagnitude;
 
                 // Track the closest valid interactable
@@ -60,4 +61,5 @@ public class PlayerInteraction : MonoBehaviour
 
 public interface IInteractable {
     public void Interact();
+    public bool CanInteract();
 }
